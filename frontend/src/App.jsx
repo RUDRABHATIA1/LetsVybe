@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import SignUp from './pages/SignUp.jsx'
 import SignIn from './pages/SignIn.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
-export const serverUrl = "http://localhost:4000"
+export const serverUrl = "https://letsvybe.onrender.com"
 import Home from './pages/Home.jsx'
 import { useDispatch, useSelector } from 'react-redux'
 import getCurrentUser from './hooks/getCurrentUser'
