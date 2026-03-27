@@ -3,7 +3,7 @@ import { MoveLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Search as SearchIcon } from 'lucide-react';
 import { useState } from 'react';
-import { serverUrl } from '../App';
+import { apiConfig } from '../config/apiConfig';
 import { useDispatch } from 'react-redux';
 import { setSearchData } from '../redux/userSlice';
 import axios from 'axios';
@@ -22,7 +22,7 @@ const Search = () => {
                 dispatch(setSearchData([]))
                 return
             }
-            const result = await axios.get(`${serverUrl}/api/user/search?keyword=${encodeURIComponent(input.trim())}`,{withCredentials:true})
+            const result = await axios.get(`${apiConfig.API_URL}/api/user/search?keyword=${encodeURIComponent(input.trim())}`,{withCredentials:true})
             dispatch(setSearchData(result.data))
         } catch (error) {
             console.log(error)

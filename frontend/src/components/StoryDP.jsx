@@ -3,7 +3,7 @@ import dp from '../assets/dp.png'
 import { CirclePlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { serverUrl } from '../App';
+import { apiConfig } from '../config/apiConfig';
 import axios from 'axios';
 
 const StoryDP = ({profileImage, username, story}) => {
@@ -17,7 +17,7 @@ const StoryDP = ({profileImage, username, story}) => {
     const storyId = typeof story === 'string' ? story : story?._id
     if (!storyId) return
     try {
-      await axios.get(`${serverUrl}/api/story/view/${storyId}`,{withCredentials:true})
+      await axios.get(`${apiConfig.API_URL}/api/story/view/${storyId}`,{withCredentials:true})
     } catch (error) {
         console.log("Error in Handle Viewers ",error.message)
     }

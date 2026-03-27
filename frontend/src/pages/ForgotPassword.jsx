@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { ClipLoader } from "react-spinners";    
 import axios from 'axios'
-import {serverUrl} from '../App.jsx'
+import { apiConfig } from '../config/apiConfig'
 
 const ForgotPassword = () => {
 
@@ -24,7 +24,7 @@ const ForgotPassword = () => {
     const handleStep1 = async()=>{
         setLoading(true);
         try {
-            const result = await axios.post(`${serverUrl}/api/auth/sendOtp`,{email},{withCredentials:true});
+            const result = await axios.post(`${apiConfig.API_URL}/api/auth/sendOtp`,{email},{withCredentials:true});
             console.log(result.data)
             setLoading(false)
             setStep(2)
@@ -38,7 +38,7 @@ const ForgotPassword = () => {
     const handleStep2 = async()=>{
         setLoading(true);
         try {
-            const result = await axios.post(`${serverUrl}/api/auth/verifyOtp`,{email,otp},{withCredentials:true});
+            const result = await axios.post(`${apiConfig.API_URL}/api/auth/verifyOtp`,{email,otp},{withCredentials:true});
             console.log(result.data)
             setLoading(false)
             setStep(3)
@@ -57,7 +57,7 @@ const ForgotPassword = () => {
         }
 
         try {
-            const result = await axios.post(`${serverUrl}/api/auth/resetPassword`,{email,password:newPassword},{withCredentials:true});
+            const result = await axios.post(`${apiConfig.API_URL}/api/auth/resetPassword`,{email,password:newPassword},{withCredentials:true});
             console.log(result.data)
             setLoading(false)
         } catch (error) {

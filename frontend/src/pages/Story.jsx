@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { serverUrl } from '../App'
+import { apiConfig } from '../config/apiConfig'
 import { useDispatch, useSelector } from 'react-redux'
 import { setStoryData } from '../redux/storySlice'
 import StoryCard from '../components/StoryCard'
@@ -13,7 +13,7 @@ const Story = () => {
     const handleStory = async()=>{
       dispatch(setStoryData(null))
         try {
-            const result = await axios.get(`${serverUrl}/api/story/getByUsername/${username}`,{withCredentials:true})
+            const result = await axios.get(`${apiConfig.API_URL}/api/story/getByUsername/${username}`,{withCredentials:true})
             dispatch(setStoryData(result.data[0]))
         } catch (error) {
             console.log("Error in story",error)

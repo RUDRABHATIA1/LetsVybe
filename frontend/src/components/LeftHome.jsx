@@ -5,7 +5,7 @@ import dp from '../assets/dp.png'
 import { useSelector } from 'react-redux';
 import axios from 'axios'
 import { setUserData } from '../redux/userSlice';
-import { serverUrl } from '../App';
+import { apiConfig } from '../config/apiConfig';
 import { useDispatch } from 'react-redux';
 import OtherUsers from './OtherUsers';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +22,7 @@ const LeftHome = () => {
 
     const handleLogOut = async()=>{
       try {
-        const result = await axios.get(`${serverUrl}/api/auth/signout`,{withCredentials:true})
+        const result = await axios.get(`${apiConfig.API_URL}/api/auth/signout`,{withCredentials:true})
         dispatch(setUserData(null))
       } catch (error) {
           console.log("Error in logout:",error.message)

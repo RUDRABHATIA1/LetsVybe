@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { serverUrl } from '../App'
+import { apiConfig } from '../config/apiConfig'
 import { setFollowing } from '../redux/userSlice'
 import axios from 'axios'
 
@@ -11,7 +11,7 @@ const getFollowingList = () => {
     if (!userId) return
 const fetchUser = async () => {
     try{
-        const result = await axios.get(`${serverUrl}/api/user/followingList`,{withCredentials:true})
+        const result = await axios.get(`${apiConfig.API_URL}/api/user/followingList`,{withCredentials:true})
         dispatch(setFollowing(result.data))
     } catch (error) {
         console.log(error)

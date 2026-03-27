@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import SignUp from './pages/SignUp.jsx'
 import SignIn from './pages/SignIn.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
-export const serverUrl = "https://letsvybe.onrender.com"
+import { apiConfig } from './config/apiConfig.js'
 import Home from './pages/Home.jsx'
 import { useDispatch, useSelector } from 'react-redux'
 import getCurrentUser from './hooks/getCurrentUser'
@@ -43,10 +43,11 @@ const App = () => {
 
   useEffect(()=>{
     if(userData){
-      const socketIo=io(serverUrl,{
+      const socketIo=io(apiConfig.API_URL,{
         query:{
           userId:userData._id
-        }
+        },
+        withCredentials: true
       })
       dispatch(setSocket(socketIo)) 
 

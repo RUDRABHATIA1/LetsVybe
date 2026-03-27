@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { serverUrl } from '../App'
+import { apiConfig } from '../config/apiConfig'
 import { toggleFollow } from '../redux/userSlice'
 
 const FollowButton = ({targetUserId,tailwind}) => {
@@ -10,7 +10,7 @@ const FollowButton = ({targetUserId,tailwind}) => {
   const dispatch = useDispatch()
   const handleFollow= async()=>{
     try {
-      const result = await axios.get(`${serverUrl}/api/user/follow/${targetUserId}`,{withCredentials:true})
+      const result = await axios.get(`${apiConfig.API_URL}/api/user/follow/${targetUserId}`,{withCredentials:true})
       dispatch(toggleFollow(targetUserId))
     } catch (error) {
         console.log(`Handle Follow Error ${error} `)

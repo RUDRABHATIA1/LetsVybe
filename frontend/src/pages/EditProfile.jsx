@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import dp from '../assets/dp.png'
 import { useState } from 'react'
 import axios from 'axios'
-import {serverUrl} from '../App'
+import { apiConfig } from '../config/apiConfig'
 import { setProfileData, setUserData } from '../redux/userSlice'
 import { ClipLoader } from 'react-spinners'
 
@@ -52,7 +52,7 @@ const EditProfile = () => {
                 formdata.append("profileImage",backendImage)
             }
 
-            const result = await axios.put(`${serverUrl}/api/user/editprofile`,formdata,{withCredentials:true})
+            const result = await axios.put(`${apiConfig.API_URL}/api/user/editprofile`,formdata,{withCredentials:true})
 
             const updatedUser = result.data 
             

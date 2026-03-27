@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useState } from 'react'
-import { serverUrl } from '../App'
+import { apiConfig } from '../config/apiConfig'
 import { useNavigate, useParams } from 'react-router-dom'
 import { setProfileData, setSuggestedUsers } from '../redux/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -23,7 +23,7 @@ const Profile = () => {
     const { postData } = useSelector(state => state.post)
     const handleProfile = async () => {
         try {
-            const result = await axios.get(`${serverUrl}/api/user/getProfile/${username}`, { withCredentials: true })
+            const result = await axios.get(`${apiConfig.API_URL}/api/user/getProfile/${username}`, { withCredentials: true })
             dispatch(setProfileData(result.data))
         } catch (error) {
             console.log(error)
@@ -32,7 +32,7 @@ const Profile = () => {
 
     const handleSuggestedUsers = async () => {
         try {
-            const result = await axios.get(`${serverUrl}/api/user/suggested`, { withCredentials: true })
+            const result = await axios.get(`${apiConfig.API_URL}/api/user/suggested`, { withCredentials: true })
             dispatch(setSuggestedUsers(result.data))
         } catch (error) {
             console.log(error)
@@ -41,7 +41,7 @@ const Profile = () => {
 
     const handleLogOut = async () => {
         try {
-            const result = await axios.get(`${serverUrl}/api/auth/signout`, { withCredentials: true })
+            const result = await axios.get(`${apiConfig.API_URL}/api/auth/signout`, { withCredentials: true })
             dispatch(setUserData(null))
         } catch (error) {
             console.log("Error in logout:", error.message)

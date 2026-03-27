@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { Eye, Flag } from 'lucide-react';
 import { EyeOff } from 'lucide-react';
 import axios from 'axios'
-import { serverUrl } from '../App.jsx';
+import { apiConfig } from '../config/apiConfig';
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -45,7 +45,7 @@ const SignIn = () => {
         username: normalizedIdentifier,
         email: normalizedIdentifier
       }
-      const result = await axios.post(`${serverUrl}/api/auth/signin`,{
+      const result = await axios.post(`${apiConfig.API_URL}/api/auth/signin`,{
         ...payload },{withCredentials:true})
         dispatch(setUserData(result.data))  
         setLoading(false)

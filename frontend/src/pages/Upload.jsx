@@ -6,7 +6,7 @@ import { CirclePlus } from 'lucide-react'
 import { useRef } from 'react'
 import VideoPlayer from '../components/VideoPlayer'
 import axios from 'axios'
-import {serverUrl} from '../App'
+import { apiConfig } from '../config/apiConfig'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPostData } from '../redux/postSlice'
 import { setCurrentUserStory, setStoryData } from '../redux/storySlice'
@@ -89,7 +89,7 @@ const Upload = () => {
       formData.append("caption", caption)
       formData.append("mediaType", mediaType)
       formData.append("media", backendMedia)
-      const result = await axios.post(`${serverUrl}/api/post/upload`, formData, {withCredentials: true})
+      const result = await axios.post(`${apiConfig.API_URL}/api/post/upload`, formData, {withCredentials: true})
       console.log("Post uploaded:", result)
       setFrontendMedia(null)
       setBackendMedia(null)
@@ -119,7 +119,7 @@ const Upload = () => {
       const formData = new FormData()
       formData.append("mediaType", mediaType)
       formData.append("media", backendMedia)
-      const result = await axios.post(`${serverUrl}/api/story/upload`, formData, {withCredentials: true})
+      const result = await axios.post(`${apiConfig.API_URL}/api/story/upload`, formData, {withCredentials: true})
       console.log("Story uploaded:", result)
       setFrontendMedia(null)
       setBackendMedia(null)
@@ -147,7 +147,7 @@ const Upload = () => {
       formData.append("caption", caption)
       formData.append("mediaType", mediaType)
       formData.append("media", backendMedia)
-      const result = await axios.post(`${serverUrl}/api/loop/upload`, formData, {withCredentials: true})
+      const result = await axios.post(`${apiConfig.API_URL}/api/loop/upload`, formData, {withCredentials: true})
       console.log("Loop uploaded:", result)
       setFrontendMedia(null)
       setBackendMedia(null)

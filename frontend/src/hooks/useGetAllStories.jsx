@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { serverUrl } from '../App'
+import { apiConfig } from '../config/apiConfig'
 import axios from 'axios'
 import { setStoryList } from '../redux/storySlice'
 
@@ -15,7 +15,7 @@ const useGetAllStories = () => {
 
         const fetchStories = async () => {
             try{
-                const result = await axios.get(`${serverUrl}/api/story/getAll`,{withCredentials:true})
+                const result = await axios.get(`${apiConfig.API_URL}/api/story/getAll`,{withCredentials:true})
                 dispatch(setStoryList(result.data))
             } catch (error) {
                 console.log(`This is the error in the getAllStories.jsx` ,error.message)

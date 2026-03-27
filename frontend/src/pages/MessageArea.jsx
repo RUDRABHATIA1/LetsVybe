@@ -8,7 +8,7 @@ import { SendHorizontal } from 'lucide-react';
 import { useState } from 'react'
 import { setMessages } from '../redux/messageSlice'
 import axios from 'axios'
-import { serverUrl } from '../App'
+import { apiConfig } from '../config/apiConfig'
 import SenderMessage from '../components/SenderMessage'
 import ReceiverMessage from '../components/ReceiverMessage'
 
@@ -40,7 +40,7 @@ const MessageArea = () => {
         if(backendImage){
           formData.append("image",backendImage)
         }
-        const result = await axios.post(`${serverUrl}/api/message/send/${selectedUser._id}`,formData,{withCredentials:true})  
+        const result = await axios.post(`${apiConfig.API_URL}/api/message/send/${selectedUser._id}`,formData,{withCredentials:true})  
         dispatch(setMessages([...messages,result.data]))
         setInput("")
         setBackendImage("")
@@ -53,7 +53,7 @@ const MessageArea = () => {
 
   const getAllMessages= async()=>{
       try {
-        const result = await axios.get(`${serverUrl}/api/message/getAll/${selectedUser._id}`,{withCredentials:true})
+        const result = await axios.get(`${apiConfig.API_URL}/api/message/getAll/${selectedUser._id}`,{withCredentials:true})
         dispatch(setMessages(result.data))
       } catch (error) {
           console.log(`Get All Messages Error`,error)
