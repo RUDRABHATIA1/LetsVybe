@@ -4,7 +4,7 @@ import { CirclePlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { apiConfig } from '../config/apiConfig';
-import axios from 'axios';
+import { axiosInstance } from '../config/apiConfig';
 
 const StoryDP = ({profileImage, username, story}) => {
 
