@@ -38,8 +38,14 @@ const SignUp = () => {
       console.log("Sign Up button clicked ")
       const result = await axios.post(`${apiConfig.API_URL}/api/auth/signup`,{
         name , email, password, username },{withCredentials:true})
-        dispatch(setUserData(result.data))
-        setLoading(false)
+      
+      // Store token in localStorage for Authorization header
+      if (result.data.token) {
+        localStorage.setItem('auth_token', result.data.token)
+      }
+      
+      dispatch(setUserData(result.data))
+      setLoading(false)
     } catch (error) {
       setErr(error?.response?.data?.message || "Something went wrong")
       console.log("Error while signup",error.response ?.data || error)

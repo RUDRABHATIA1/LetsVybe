@@ -8,17 +8,25 @@ import { setCurrentUserStory } from '../redux/storySlice'
 const getCurrentUser = () => {
     const dispatch = useDispatch()
     useEffect(()=>{
-const fetchUser = async () => {
-    try{
-        const result = await axios.get(`${apiConfig.API_URL}/api/user/current`,{withCredentials:true})
-        dispatch(setUserData(result.data))
-        dispatch(setCurrentUserStory(result.data.story))
-    } catch (error) {
-        // No active session on signin/signup pages is an expected case.
-    }
-    }
+        // Restore token from localStorage if available
+        const savedToken = localStorage.getItem('auth_token')
+        if (savedToken) {
+            // Token will be automatically added to requests by axios interceptor
+        }
+        
+        const fetchUser = async () => {
+            try{
+                const result = await axios.get(`${apiConfig.API_URL}/api/user/current`,{withCredentials:true})
+                dispatch(setUserData(result.data))
+                dispatch(setCurrentUserStory(result.data.story))
+            } catch (error) {
+                // No active session on signin/signup pages is an expected case.
+                // Clear token if it's invalid
+                localStorage.removeItem('auth_token')
+            }
+        }
 
-    fetchUser()
+        fetchUser()
     },[dispatch])
 }
 

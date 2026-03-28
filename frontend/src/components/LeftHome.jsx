@@ -23,6 +23,7 @@ const LeftHome = () => {
     const handleLogOut = async()=>{
       try {
         const result = await axios.get(`${apiConfig.API_URL}/api/auth/signout`,{withCredentials:true})
+        localStorage.removeItem('auth_token')
         dispatch(setUserData(null))
       } catch (error) {
           console.log("Error in logout:",error.message)

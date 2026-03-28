@@ -47,8 +47,14 @@ const SignIn = () => {
       }
       const result = await axios.post(`${apiConfig.API_URL}/api/auth/signin`,{
         ...payload },{withCredentials:true})
-        dispatch(setUserData(result.data))  
-        setLoading(false)
+      
+      // Store token in localStorage for Authorization header
+      if (result.data.token) {
+        localStorage.setItem('auth_token', result.data.token)
+      }
+      
+      dispatch(setUserData(result.data))  
+      setLoading(false)
     } catch (error) {
       console.log("Error while signin",error.response ?.data || error)
       setLoading(false)
