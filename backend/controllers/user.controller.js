@@ -1,6 +1,7 @@
 import uploadOnCloudinary from '../config/cloudinary.js'
 import Notification from '../models/notifications.model.js'
 import User from '../models/user.model.js'
+import { getSocketId, io } from '../socket.js'
 
 export const getCurrentUser = async (req, res) => {
 try {
@@ -122,33 +123,23 @@ export const follow = async(req,res)=>{
     try {
         const currentUserId = req.userId
         const targetUserId = req.params.targetUserId
-            if(currentUserId._id!=targetUserId._id){
-                const notification = await Notification.create({
-                    sender:currentUserId._id,
-                    receiver:targetUserId._id,
-                    type:"follow",
-                    message:"Started Following You"
-                })
-                const populatedNotification = await Notification.findById(notification._id).
-                populate("sender receiver loop")
-                const receiverSocketId=getSocketId(targetUserId._id)
-                if(receiverSocketId){
-                    io.to(receiverSocketId).emit("newNotification",populatedNotification)
-                }
-            }
 
         if(!targetUserId){
             return res.status(400).json({message:`target user is not found`})
         }
 
-        if(currentUserId==targetUserId){
+        if(currentUserId === targetUserId){
             return res.status(400).json({message:`You can't follow yourself`})
         }
 
         const currentUser = await User.findById(currentUserId)
         const targetUser = await User.findById(targetUserId)
 
-        const isFollowing= currentUser.following.includes(targetUserId)
+        if(!currentUser || !targetUser){
+            return res.status(400).json({message:"User not found"})
+        }
+
+        const isFollowing = currentUser.following.some((id) => id.toString() === targetUserId)
 
         if(isFollowing){
             currentUser.following= currentUser.following.filter(id=>id.toString()!=targetUserId)
@@ -166,6 +157,22 @@ export const follow = async(req,res)=>{
             targetUser.followers.push(currentUserId )
             await currentUser.save()
             await targetUser.save()
+
+            if(currentUserId !== targetUserId){
+                const notification = await Notification.create({
+                    sender:currentUserId,
+                    receiver:targetUserId,
+                    type:"follow",
+                    message:"Started Following You"
+                })
+                const populatedNotification = await Notification.findById(notification._id)
+                    .populate("sender receiver loop")
+                const receiverSocketId = getSocketId(targetUserId)
+                if(receiverSocketId){
+                    io.to(receiverSocketId).emit("newNotification",populatedNotification)
+                }
+            }
+
             return res.status(200).json({
                 following:true,
                 message:"follow successfully "
