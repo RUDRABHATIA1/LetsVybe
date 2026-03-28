@@ -30,9 +30,10 @@ const userSlice = createSlice({
             state.following=action.payload
         },
         toggleFollow:(state,action)=>{
-            const targetUserId=action.payload
-            if(state.following.includes(targetUserId)){
-                state.following=state.following.filter(id=>id!=targetUserId)
+            const targetUserId=String(action.payload)
+            const isFollowing = state.following.some((id) => String(id) === targetUserId)
+            if(isFollowing){
+                state.following=state.following.filter((id)=>String(id)!==targetUserId)
             }else{
                 state.following.push(targetUserId)
             }

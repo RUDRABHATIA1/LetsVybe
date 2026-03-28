@@ -7,19 +7,20 @@ import { toggleFollow } from '../redux/userSlice'
 
 const FollowButton = ({targetUserId,tailwind}) => {
   const {following} = useSelector(state=>state.user)
-  const isFollowing = following.includes(targetUserId)
+  const normalizedTargetUserId = String(targetUserId)
+  const isFollowing = following.some((id) => String(id) === normalizedTargetUserId)
   const dispatch = useDispatch()
   const handleFollow= async()=>{
     try {
-      const result = await axiosInstance.get(`/api/user/follow/${targetUserId}`,{withCredentials:true})
-      dispatch(toggleFollow(targetUserId))
+      await axiosInstance.get(`/api/user/follow/${normalizedTargetUserId}`,{withCredentials:true})
+      dispatch(toggleFollow(normalizedTargetUserId))
     } catch (error) {
         console.log(`Handle Follow Error ${error} `)
     }
   }
 
   return (
-    <button className={tailwind} onClick={handleFollow} >
+    <button type='button' className={tailwind} onClick={handleFollow} >
       {isFollowing? "Following" : "Follow"}
     </button>
   )
