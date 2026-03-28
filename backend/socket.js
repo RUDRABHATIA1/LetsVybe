@@ -4,10 +4,13 @@ import { Server } from "socket.io"
 
 const app = express()
 const server = http.createServer(app)
+const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim()).filter(Boolean)
+    : ["http://localhost:5173", "https://lets-vybe.vercel.app"]
 
 const io = new Server(server,{
     cors:{
-        origin:["http://localhost:5173", "https://lets-vybe.vercel.app"],
+        origin:allowedOrigins,
         methods:["GET","POST"]
     }
 })

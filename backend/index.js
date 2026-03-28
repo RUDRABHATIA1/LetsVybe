@@ -20,6 +20,9 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const port = process.env.PORT
+const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim()).filter(Boolean)
+    : ["http://localhost:5173", "https://lets-vybe.vercel.app"]
 
 // Create public directory if it doesn't exist
 const publicDir = path.join(__dirname, 'public')
@@ -30,9 +33,28 @@ if (!fs.existsSync(publicDir)) {
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin:["http://localhost:5173", "https://lets-vybe.vercel.app"],
+    origin: (origin, callback) => {
+        // Allow requests from tools without an Origin header and known frontend origins.
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true)
+            return
+        }
+        callback(new Error('Not allowed by CORS'))
+    },
     credentials:true 
 }))
+
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        service: 'letsvybe-backend',
+        health: '/api/health'
+    })
+})
+
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok' })
+})
 
 // Expose local uploads when Cloudinary is not configured.
 app.use('/public', express.static(publicDir))
