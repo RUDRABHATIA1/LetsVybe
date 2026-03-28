@@ -9,7 +9,7 @@ const Nav = () => {
   const {userData} = useSelector(state=>state.user)
   return (
     <div className='w-[90%] lg:w-[40%]  h-[80px] bg-black flex justify-around items-center fixed bottom-[20px] rounded-full shadow-2xl shadow-[#000000] z-[100]'>
-      <div className='text-white w-[25px] h-[25px] cursor-pointer'><House /></div>
+      <div className='text-white w-[25px] h-[25px] cursor-pointer' onClick={()=>navigate('/')}><House /></div>
       <div className='text-white w-[25px] h-[25px] cursor-pointer' onClick={()=>navigate('/search')}><Search /></div>
       <div className='text-white w-[25px] h-[25px] cursor-pointer' onClick={()=>navigate('/upload')}><CirclePlus  /></div>
       <div className='text-white w-[25px] h-[25px] cursor-pointer' onClick={()=>navigate('/messages')}><MessageCircleMore /></div>
