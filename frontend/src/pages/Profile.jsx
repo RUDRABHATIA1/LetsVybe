@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { apiConfig } from '../config/apiConfig'
+import { axiosInstance } from '../config/apiConfig'
 import { useNavigate, useParams } from 'react-router-dom'
 import { setProfileData, setSuggestedUsers } from '../redux/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
