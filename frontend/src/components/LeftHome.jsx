@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios'
 import { setUserData } from '../redux/userSlice';
 import { apiConfig } from '../config/apiConfig';
+import { axiosInstance } from '../config/apiConfig';
 import { useDispatch } from 'react-redux';
 import OtherUsers from './OtherUsers';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +23,7 @@ const LeftHome = () => {
 
     const handleLogOut = async()=>{
       try {
-        const result = await axios.get(`${apiConfig.API_URL}/api/auth/signout`,{withCredentials:true})
+        const result = await axiosInstance.get(`/api/auth/signout`,{withCredentials:true})
         localStorage.removeItem('auth_token')
         dispatch(setUserData(null))
       } catch (error) {

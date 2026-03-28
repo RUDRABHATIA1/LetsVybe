@@ -7,6 +7,7 @@ import FollowButton from './FollowButton';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { apiConfig } from '../config/apiConfig';
+import { axiosInstance } from '../config/apiConfig';
 import { useDispatch } from 'react-redux';
 import { setLoopData } from '../redux/loopSlice';
 
@@ -61,7 +62,7 @@ const LoopCard = ({ loop }) => {
       e.stopPropagation()
     }
     try {
-      const result = await axios.post(`${apiConfig.API_URL}/api/loop/like/${loop._id}`, {}, { withCredentials: true })
+      const result = await axiosInstance.post(`/api/loop/like/${loop._id}`, {}, { withCredentials: true })
       const updatedLoop = result.data
       // Update the postData array with the updated post
       const updatedLoops = loopData.map(p => p._id === loop._id ? updatedLoop : p)
@@ -79,7 +80,7 @@ const LoopCard = ({ loop }) => {
     e.preventDefault()
     e.stopPropagation()
     try {
-      const result = await axios.post(`${apiConfig.API_URL}/api/loop/comment/${loop._id}`, { message }, { withCredentials: true })
+      const result = await axiosInstance.post(`/api/loop/comment/${loop._id}`, { message }, { withCredentials: true })
       const updatedLoop = result.data
       // Update the postData array with the updated post
       const updatedLoops = loopData.map(p => p._id === loop._id ? updatedLoop : p)

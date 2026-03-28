@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { apiConfig } from '../config/apiConfig'
-import axios from 'axios'
+import { axiosInstance as axios } from '../config/apiConfig'
 import { setNotificationData } from '../redux/userSlice'
 
 const getAllNotifications = () => {
@@ -12,7 +11,7 @@ const getAllNotifications = () => {
         if (!userId) return
         const fetchNotifications = async () => {
             try {
-                const result = await axios.get(`${apiConfig.API_URL}/api/user/getAllNotifications`, { withCredentials: true })
+                const result = await axios.get(`/api/user/getAllNotifications`, { withCredentials: true })
                 dispatch(setNotificationData(result.data))
             } catch (error) {
                 console.log(error)

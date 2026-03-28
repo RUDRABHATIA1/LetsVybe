@@ -17,7 +17,7 @@ const StoryDP = ({profileImage, username, story}) => {
     const storyId = typeof story === 'string' ? story : story?._id
     if (!storyId) return
     try {
-      await axios.get(`${apiConfig.API_URL}/api/story/view/${storyId}`,{withCredentials:true})
+      await axiosInstance.get(`/api/story/view/${storyId}`,{withCredentials:true})
     } catch (error) {
         console.log("Error in Handle Viewers ",error.message)
     }

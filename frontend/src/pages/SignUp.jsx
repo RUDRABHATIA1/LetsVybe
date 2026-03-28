@@ -6,6 +6,7 @@ import { Eye, Flag } from 'lucide-react';
 import { EyeOff } from 'lucide-react';
 import axios from 'axios'
 import { apiConfig } from '../config/apiConfig';
+import { axiosInstance } from '../config/apiConfig';
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -36,7 +37,7 @@ const SignUp = () => {
     setErr("")
     try {
       console.log("Sign Up button clicked ")
-      const result = await axios.post(`${apiConfig.API_URL}/api/auth/signup`,{
+      const result = await axiosInstance.post(`/api/auth/signup`,{
         name , email, password, username },{withCredentials:true})
       
       // Store token in localStorage for Authorization header

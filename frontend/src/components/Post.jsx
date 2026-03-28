@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import { useState } from 'react';
 import axios from 'axios'
 import { apiConfig } from '../config/apiConfig'
+import { axiosInstance } from '../config/apiConfig'
 import { setPostData } from '../redux/postSlice';
 import { setUserData } from '../redux/userSlice';  
 import FollowButton from './FollowButton';
@@ -36,7 +37,7 @@ const Post = ({ post }) => {
     e.preventDefault()
     e.stopPropagation()
     try {
-      const result = await axios.post(`${apiConfig.API_URL}/api/post/like/${post._id}`, {}, {withCredentials:true})
+      const result = await axiosInstance.post(`/api/post/like/${post._id}`, {}, {withCredentials:true})
       const updatedPost = result.data 
       // Update the postData array with the updated post
       const updatedPosts = postData.map(p => p._id === post._id ? updatedPost : p)
@@ -57,7 +58,7 @@ const Post = ({ post }) => {
       return
     }
     try {
-      const result = await axios.post(`${apiConfig.API_URL}/api/post/comment/${post._id}`,{message},{withCredentials:true})
+      const result = await axiosInstance.post(`/api/post/comment/${post._id}`,{message},{withCredentials:true})
       const updatedPost = result.data 
       // Update the postData array with the updated post
       const updatedPosts = postData.map(p => p._id === post._id ? updatedPost : p)
@@ -75,7 +76,7 @@ const Post = ({ post }) => {
     e.preventDefault()
     e.stopPropagation()
     try {
-      const result = await axios.get(`${apiConfig.API_URL}/api/post/saved/${post._id}`,{withCredentials:true})
+      const result = await axiosInstance.get(`/api/post/saved/${post._id}`,{withCredentials:true})
       // Toggle the saved status in userData
       const isSaved = userData?.saved?.some(p => p?._id === post._id || p === post._id)
       const updatedUserData = {

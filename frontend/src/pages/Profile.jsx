@@ -23,7 +23,7 @@ const Profile = () => {
     const { postData } = useSelector(state => state.post)
     const handleProfile = async () => {
         try {
-            const result = await axios.get(`${apiConfig.API_URL}/api/user/getProfile/${username}`, { withCredentials: true })
+            const result = await axiosInstance.get(`/api/user/getProfile/${username}`, { withCredentials: true })
             dispatch(setProfileData(result.data))
         } catch (error) {
             console.log(error)
@@ -32,7 +32,7 @@ const Profile = () => {
 
     const handleSuggestedUsers = async () => {
         try {
-            const result = await axios.get(`${apiConfig.API_URL}/api/user/suggested`, { withCredentials: true })
+            const result = await axiosInstance.get(`/api/user/suggested`, { withCredentials: true })
             dispatch(setSuggestedUsers(result.data))
         } catch (error) {
             console.log(error)
@@ -41,7 +41,7 @@ const Profile = () => {
 
     const handleLogOut = async () => {
         try {
-            const result = await axios.get(`${apiConfig.API_URL}/api/auth/signout`, { withCredentials: true })
+            const result = await axiosInstance.get(`/api/auth/signout`, { withCredentials: true })
             localStorage.removeItem('auth_token')
             dispatch(setUserData(null))
         } catch (error) {

@@ -6,6 +6,7 @@ import { Eye, Flag } from 'lucide-react';
 import { EyeOff } from 'lucide-react';
 import axios from 'axios'
 import { apiConfig } from '../config/apiConfig';
+import { axiosInstance } from '../config/apiConfig';
 import { ClipLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -45,7 +46,7 @@ const SignIn = () => {
         username: normalizedIdentifier,
         email: normalizedIdentifier
       }
-      const result = await axios.post(`${apiConfig.API_URL}/api/auth/signin`,{
+      const result = await axiosInstance.post(`/api/auth/signin`,{
         ...payload },{withCredentials:true})
       
       // Store token in localStorage for Authorization header

@@ -22,7 +22,7 @@ const Search = () => {
                 dispatch(setSearchData([]))
                 return
             }
-            const result = await axios.get(`${apiConfig.API_URL}/api/user/search?keyword=${encodeURIComponent(input.trim())}`,{withCredentials:true})
+            const result = await axios.get(`/api/user/search?keyword=${encodeURIComponent(input.trim())}`,{withCredentials:true})
             dispatch(setSearchData(result.data))
         } catch (error) {
             console.log(error)
