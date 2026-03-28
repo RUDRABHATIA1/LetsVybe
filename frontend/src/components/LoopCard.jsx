@@ -20,7 +20,7 @@ const LoopCard = ({ loop }) => {
   const author = loop.author || null
 
   const [isPlaying, setIsPlaying] = useState(true);
-  const [ismute, setIsmute] = useState(false);
+  const [ismute, setIsmute] = useState(true);
   const [progress, setProgress] = useState(0);
   const [showHeart, setShowHeart] = useState(false);
   const [showComment, setShowComment] = useState(false);
@@ -197,10 +197,10 @@ const LoopCard = ({ loop }) => {
 
       </div>
 
-      <video ref={videoRef} autoPlay loop muted src={loop?.media} className='w-full max-h-[100vh]' onClick={handleClick} onTimeUpdate={handleTimeUpdate} onDoubleClick={handleLikeOnDoubleClick} />
+      <video ref={videoRef} autoPlay loop muted={ismute} src={loop?.media} className='w-full max-h-[100vh]' onClick={handleClick} onTimeUpdate={handleTimeUpdate} onDoubleClick={handleLikeOnDoubleClick} />
 
       <div className='absolute top-[20px] right-[20px] z-[100]' onClick={() => setIsmute(!ismute)}>
-        {!ismute ? <Volume2 className='w-[20px] h-[20px] text-white font-semibold' /> : <VolumeOff className='w-[20px] h-[20px] text-white font-semibold' />}
+        {ismute ? <VolumeOff className='w-[20px] h-[20px] text-white font-semibold' /> : <Volume2 className='w-[20px] h-[20px] text-white font-semibold' />}
       </div>
 
       <div className='absolute top-[20px] left-[20px] right-[70px] z-[100] max-w-[300px]'>
