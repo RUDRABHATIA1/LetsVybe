@@ -4,7 +4,6 @@ const loopSlice = createSlice({
     name:"loop",
     initialState:{
         loopData:[],
-
     },
     reducers:{
         setLoopData:(state,action)=>{

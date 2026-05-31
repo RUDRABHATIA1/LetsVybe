@@ -4,7 +4,6 @@ const postSlice = createSlice({
     name:"post",
     initialState:{
         postData:[],
-
     },
     reducers:{
         setPostData:(state,action)=>{

@@ -6,7 +6,6 @@ const messageSlice = createSlice({
         selectedUser:null,
         messages:[],
         prevChatUsers:[]
-
     },
     reducers:{
         setSelectedUser:(state,action)=>{
