@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: vybe-backend
+    env: node
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: "cd backend && npm install"
+    startCommand: "cd backend && npm start"
+    autoDeploy: true
+
+  - type: static
+    name: vybe-frontend
+    env: static
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: "cd frontend && npm install && npm run build"
+    staticPublishPath: "frontend/dist"
+    autoDeploy: true
+
+# NOTE: Do NOT commit secrets. Set the following environment variables
+# in the Render dashboard for the backend service (backend environment):
+# MONGODB_URI, JWT_SECRET, EMAIL, EMAIL_PASSWORD, CLOUDINARY_CLOUD_NAME,
+# CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, PORT (optional)
