@@ -37,7 +37,9 @@ const useConsumption = () => {
 
         // Ping backend every 1 minute
         const pingInterval = setInterval(() => {
-            pingServer();
+            if (document.visibilityState === 'visible') {
+                pingServer();
+            }
         }, 60000);
 
         return () => clearInterval(pingInterval);
@@ -48,13 +50,15 @@ const useConsumption = () => {
         if (secondsLeft === null || secondsLeft <= 0) return;
 
         const secondInterval = setInterval(() => {
-            setSecondsLeft((prev) => {
-                if (prev <= 1) {
-                    clearInterval(secondInterval);
-                    return 0;
-                }
-                return prev - 1;
-            });
+            if (document.visibilityState === 'visible') {
+                setSecondsLeft((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(secondInterval);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }
         }, 1000);
 
         return () => clearInterval(secondInterval);

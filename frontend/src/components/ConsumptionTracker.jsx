@@ -43,20 +43,47 @@ const ConsumptionTracker = () => {
         <>
             {/* Floating Timer UI */}
             {!isLimitReached && secondsLeft !== null && (
-                <div style={{
-                    position: 'fixed',
-                    bottom: '20px',
-                    left: '20px',
-                    background: 'rgba(0, 0, 0, 0.8)',
-                    color: '#fff',
-                    padding: '10px 15px',
-                    borderRadius: '20px',
-                    zIndex: 9998,
-                    fontWeight: 'bold',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
-                }}>
-                    Time Left: {formatTime(secondsLeft)}
-                </div>
+                <>
+                    <style>
+                        {`
+                        @keyframes pulse-clock {
+                            0% { transform: scale(1); opacity: 1; }
+                            50% { transform: scale(1.1); opacity: 0.8; }
+                            100% { transform: scale(1); opacity: 1; }
+                        }
+                        `}
+                    </style>
+                    <div style={{
+                        position: 'fixed',
+                        top: '25px',
+                        right: '25px',
+                        background: 'rgba(20, 20, 20, 0.65)',
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255, 77, 77, 0.4)',
+                        color: '#ff4d4d',
+                        padding: '12px 24px',
+                        borderRadius: '30px',
+                        zIndex: 9998,
+                        fontWeight: '800',
+                        fontSize: '1.1rem',
+                        fontFamily: '"Inter", "Roboto", sans-serif',
+                        letterSpacing: '1px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        boxShadow: '0 8px 32px 0 rgba(255, 77, 77, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                        userSelect: 'none'
+                    }}>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'pulse-clock 2s infinite ease-in-out' }}>
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span style={{ textShadow: '0 0 15px rgba(255, 77, 77, 0.6)' }}>
+                            {formatTime(secondsLeft)}
+                        </span>
+                    </div>
+                </>
             )}
 
             {/* Limit Reached Overlay */}
