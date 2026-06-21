@@ -6,7 +6,7 @@ import { setConsumptionData } from '../redux/userSlice.js';
 
 const useConsumption = () => {
     const dispatch = useDispatch();
-    const { userData } = useSelector((state) => state.user);
+    const { userData, consumptionData } = useSelector((state) => state.user);
     // Local state to keep track of precise seconds for the timer UI without hitting the backend every second
     const [secondsLeft, setSecondsLeft] = useState(null);
 
@@ -44,6 +44,19 @@ const useConsumption = () => {
 
         return () => clearInterval(pingInterval);
     }, [userData, dispatch]);
+
+    // Keep local `secondsLeft` in sync with any changes to `consumptionData`
+    // so actions like taking a loan (which update Redux) immediately reset the timer.
+    useEffect(() => {
+        if (!consumptionData) return;
+
+        if (!consumptionData.isLimitReached) {
+            // consumptionData.timeLeft is in minutes on the backend
+            setSecondsLeft(consumptionData.timeLeft * 60);
+        } else {
+            setSecondsLeft(0);
+        }
+    }, [consumptionData]);
 
     // Local decrementing timer for smooth UI update every second
     useEffect(() => {
