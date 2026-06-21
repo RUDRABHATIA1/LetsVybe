@@ -6,11 +6,13 @@ import { axiosInstance } from '../config/apiConfig'
 import { useDispatch, useSelector } from 'react-redux'
 import { setStoryData } from '../redux/storySlice'
 import StoryCard from '../components/StoryCard'
+import LimitReachedUI from '../components/LimitReachedUI'
 
 const Story = () => {
     const {username} = useParams()
     const dispatch = useDispatch()
     const {storyData} = useSelector(state=>state.story) 
+    const {consumptionData} = useSelector(state=>state.user)
     const handleStory = async()=>{
       dispatch(setStoryData(null))
         try {
@@ -30,7 +32,9 @@ const Story = () => {
   
   return (
     <div className='w-full h-[100vh] bg-black flex justify-center items-center'>
-        {storyData ? (
+        {consumptionData?.isLimitReached ? (
+            <LimitReachedUI />
+        ) : storyData ? (
           <StoryCard storyData={storyData} />
         ) : (
           <div className='text-white text-lg'>No story available</div>

@@ -3,11 +3,13 @@ import { MoveLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import LoopCard from '../components/LoopCard'
 import {useSelector} from 'react-redux'
+import LimitReachedUI from '../components/LimitReachedUI'
 
 const Loops = () => {
 
     const navigate = useNavigate()
     const {loopData} = useSelector(state=>state.loop)
+    const {consumptionData} = useSelector(state=>state.user)
   const safeLoops = Array.isArray(loopData) ? loopData.filter((loop) => loop && loop.media) : []
 
   return (
@@ -16,17 +18,22 @@ const Loops = () => {
             <MoveLeft onClick={()=>navigate( `/` )} className='text-white left-[20px] top-[20px] w-[25px] h-[25px] cursor-pointer' />
             <h1 className='font-semibold text-[20px] text-white'>Loops</h1>
         </div>
-        <div className='h-[100vh] overflow-y-scroll snap-y snap-mandatory scrollbar-hide '>
-          {safeLoops.map((loop)=> (
-            <div key={loop._id || loop.media} className='h-screen snap-start'>
-              <LoopCard loop={loop} />
+        {consumptionData?.isLimitReached ? (
+            <div className="w-full h-full pt-[80px]">
+                <LimitReachedUI />
             </div>
-          ))}
-          {safeLoops.length === 0 && (
-            <div className='h-screen flex items-center justify-center text-white text-lg'>No loops available</div>
-          )}
-          
-        </div>
+        ) : (
+            <div className='h-[100vh] overflow-y-scroll snap-y snap-mandatory scrollbar-hide '>
+              {safeLoops.map((loop)=> (
+                <div key={loop._id || loop.media} className='h-screen snap-start'>
+                  <LoopCard loop={loop} />
+                </div>
+              ))}
+              {safeLoops.length === 0 && (
+                <div className='h-screen flex items-center justify-center text-white text-lg'>No loops available</div>
+              )}
+            </div>
+        )}
         
     </div>
   )

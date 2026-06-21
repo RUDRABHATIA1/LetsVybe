@@ -14,7 +14,7 @@ const Search = () => {
     const navigate = useNavigate()
     const [input, setInput] = useState("");
     const dispatch= useDispatch()
-    const { searchData, userData } = useSelector((state)=>state.user)
+    const { searchData, userData, consumptionData } = useSelector((state)=>state.user)
 
     const handleSearch = async () => {
         try {
@@ -68,9 +68,12 @@ const Search = () => {
                             .map((user)=> (
                                 <div
                                     key={user._id}
-                                    className='w-full h-16 px-3 bg-[#0f1414] border border-gray-800 rounded-xl flex items-center justify-between cursor-pointer'
+                                    className={`w-full h-16 px-3 bg-[#0f1414] border border-gray-800 rounded-xl flex items-center justify-between cursor-pointer ${consumptionData?.isLimitReached ? 'opacity-50' : ''}`}
                                 >
-                                    <div className='flex items-center gap-2.5' onClick={()=>navigate(`/profile/${user.username}`)}>
+                                    <div className={`flex items-center gap-2.5 ${consumptionData?.isLimitReached ? 'cursor-not-allowed' : ''}`} onClick={() => {
+                                        if(consumptionData?.isLimitReached) return;
+                                        navigate(`/profile/${user.username}`);
+                                    }}>
                                         <div className='w-11 h-11 rounded-full overflow-hidden'>
                                             <img src={user.profileImage || dp} alt="" className='w-full h-full object-cover' />
                                         </div>
@@ -79,7 +82,10 @@ const Search = () => {
                                             <div className='text-gray-400 text-[13px]'>{user.name}</div>
                                         </div>
                                     </div>
-                                    <button className='px-3 py-1.5 bg-white text-black rounded-lg cursor-pointer' onClick={()=>navigate(`/profile/${user.username}`)}>Open</button>
+                                    <button className={`px-3 py-1.5 bg-white text-black rounded-lg ${consumptionData?.isLimitReached ? 'cursor-not-allowed' : 'cursor-pointer'}`} onClick={() => {
+                                        if(consumptionData?.isLimitReached) return;
+                                        navigate(`/profile/${user.username}`);
+                                    }}>Open</button>
                                 </div>
                             ))
                     ) : (

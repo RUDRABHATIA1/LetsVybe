@@ -7,11 +7,12 @@ import { useSelector } from 'react-redux';
 import Post from './Post';
 import { MessageCircleMore } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import LimitReachedUI from './LimitReachedUI';
 
 
 const Feed = () => {
   const {postData} = useSelector(state=>state.post)
-  const {userData, notificationData} = useSelector(state=>state.user)
+  const {userData, notificationData, consumptionData} = useSelector(state=>state.user)
   const {storyList, currentUserStory} = useSelector(state=>state.story)
   const navigate = useNavigate()
 
@@ -27,29 +28,37 @@ const Feed = () => {
             <MessageCircleMore className='text-white w-[25px] h-[25px]' onClick={()=>navigate('/messages')} />
           </div>
         </div>
-        <div className='flex w-full overflow-auto gap-[20px] items-center p-[20px]'>
-           <StoryDP username={"Your Story"} profileImage={userData.profileImage} story={currentUserStory} />
+        {consumptionData?.isLimitReached ? (
+            <div style={{ height: 'calc(100vh - 100px)' }}>
+                <LimitReachedUI />
+            </div>
+        ) : (
+            <>
+                <div className='flex w-full overflow-auto gap-[20px] items-center p-[20px]'>
+                   <StoryDP username={"Your Story"} profileImage={userData.profileImage} story={currentUserStory} />
 
-        {storyList?.map((story, index)=>(
-          <StoryDP
-            username={story.author?.username}
-            profileImage={story.author?.profileImage}
-            story={story}
-            key={index}
-          /> 
-        ))}
+                {storyList?.map((story, index)=>(
+                  <StoryDP
+                    username={story.author?.username}
+                    profileImage={story.author?.profileImage}
+                    story={story}
+                    key={index}
+                  /> 
+                ))}
 
-        </div>
+                </div>
 
-        <div className='w-full min-h-[100vh] flex flex-col items-center gap-[20px] p-[10px] pt-[40px] bg-white rounded-t-[60px] relative pb-[120px]'>
-          <Nav />
+                <div className='w-full min-h-[100vh] flex flex-col items-center gap-[24px] p-[10px] pt-[40px] bg-gradient-to-b from-[#0f1115] to-black rounded-t-[60px] relative pb-[120px] shadow-[0_-10px_40px_rgba(0,0,0,0.8)]'>
+                  <Nav />
 
-          {postData?.map((post,index)=>(
-            <Post post={post} key={index} />
-          ))}
+                  {postData?.map((post,index)=>(
+                    <Post post={post} key={index} />
+                  ))}
 
 
-        </div>
+                </div>
+            </>
+        )}
     </div>
   )
 }

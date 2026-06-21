@@ -28,7 +28,7 @@ export const suggestedUsers = async(req,res)=>{
     try {
         const users = await User.find({
             _id:{$ne:req.userId}
-        }).select("-password") 
+        }).select("-password").limit(15)
         return res.status(200).json(users)
     } catch (error) {
         return res.status(500).json(`message:get suggested users error : ${error}`)

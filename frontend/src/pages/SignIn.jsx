@@ -63,6 +63,31 @@ const SignIn = () => {
     }
   }
 
+  const handleDummySignIn = async () => {
+    setLoading(true);
+    setErr("");
+    try {
+      const payload = {
+        password: "dummy123",
+        username: "dummy@vybe",
+        email: "dummy@vybe"
+      }
+      const result = await axiosInstance.post(`/api/auth/signin`,{
+        ...payload },{withCredentials:true})
+      
+      if (result.data.token) {
+        localStorage.setItem('auth_token', result.data.token)
+      }
+      
+      dispatch(setUserData(result.data))  
+      setLoading(false)
+    } catch (error) {
+      console.log("Error while signin",error.response ?.data || error)
+      setLoading(false)
+      setErr(error?.response?.data?.message || "Unable to sign in")  
+    }
+  }
+
 
 
   return (
@@ -100,11 +125,15 @@ const SignIn = () => {
               }
 
 
-            <button className='w-[70%] px-[20px] py-[10px] bg-black text-white font-semibold h-[50px] cursor-pointer rounded-2xl mt-[30px]' onClick={handleSignIn} disabled={loading}>{
+            <button className='w-[70%] px-[20px] py-[10px] bg-black text-white font-semibold h-[50px] cursor-pointer rounded-2xl mt-[30px] hover:bg-gray-800 transition-colors' onClick={handleSignIn} disabled={loading}>{
               loading ? <ClipLoader size={30} color='white' /> : `Login`
               }</button>
 
-            <p onClick={()=>navigate('/signup')} className='cursor-pointer text-gray-800'>Don't have an Account ? <span className='border-b-2 border-b-black pb-[3px] text-black'>Sign Up</span></p>
+            <button className='w-[70%] px-[20px] py-[10px] bg-gray-200 text-black font-semibold h-[50px] cursor-pointer rounded-2xl mt-[10px] hover:bg-gray-300 transition-colors' onClick={handleDummySignIn} disabled={loading}>{
+              loading ? <ClipLoader size={30} color='black' /> : `Login as Dummy User`
+              }</button>
+
+            <p onClick={()=>navigate('/signup')} className='cursor-pointer text-gray-800 mt-[10px]'>Don't have an Account ? <span className='border-b-2 border-b-black pb-[3px] text-black'>Sign Up</span></p>
 
         </div>
 

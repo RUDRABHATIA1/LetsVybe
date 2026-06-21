@@ -10,7 +10,10 @@ const OtherUsers = ({user}) => {
   return (
     <div className='w-full h-[50px]  flex items-center justify-between border-b-2 border-gray-800'>
           <div className='flex items-center gap-[10px]'>
-            <div className='w-[50px] h-[50px] border-2 border-black rounded-full cursor-pointer overflow-hidden' onClick={()=>navigate(`/profile/${user.username}`)}>
+            <div className={`w-[50px] h-[50px] border-2 border-black rounded-full cursor-pointer overflow-hidden ${userData.consumptionData?.isLimitReached ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={() => {
+                if(userData.consumptionData?.isLimitReached) return;
+                navigate(`/profile/${user.username}`);
+            }}>
                 <img src={user.profileImage ||  dp} alt="" className='' />
             </div>
             <div>
@@ -19,12 +22,7 @@ const OtherUsers = ({user}) => {
             </div>
           </div>
           
-          <FollowButton tailwind={'px-[10px] w-[100px] py-[5px] h-[40px] bg-white rounded-2xl cursor-pointer'} targetUserId={user._id} />
-          
-            Follow
-          
-
-
+          <FollowButton tailwind={'px-[10px] w-[100px] py-[5px] h-[40px] bg-white text-black font-semibold rounded-2xl cursor-pointer'} targetUserId={user._id} />
     </div>
   )
 }

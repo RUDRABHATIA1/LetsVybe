@@ -15,7 +15,7 @@ import ReceiverMessage from '../components/ReceiverMessage'
 
 const MessageArea = () => {
   const {selectedUser, messages} = useSelector(state=>state.message)
-  const {userData} = useSelector(state=>state.user)
+  const {userData, consumptionData} = useSelector(state=>state.user)
   const {socket} = useSelector(state=>state.socket)
   const dispatch = useDispatch()
   const [input, setInput] = useState("");
@@ -86,7 +86,10 @@ const MessageArea = () => {
         <div className=' h-[80px] flex items-center gap-[20px] px-[20px] '>
             <MoveLeft onClick={()=>navigate(`/`)} className='text-white left-[20px] top-[20px] w-[25px] h-[25px] cursor-pointer' />
         </div>
-        <div className='w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden' onClick={()=>navigate(`/profile/${selectedUser.username}`)}>
+        <div className={`w-[40px] h-[40px] border-2 border-black rounded-full cursor-pointer overflow-hidden ${consumptionData?.isLimitReached ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={() => {
+            if(consumptionData?.isLimitReached) return;
+            navigate(`/profile/${selectedUser.username}`);
+        }}>
           <img src={selectedUser.profileImage ||  dp} alt="" className='' />
         </div>
         <div className='text-white text-[18px] font-semibold'>        

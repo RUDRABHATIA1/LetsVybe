@@ -14,13 +14,14 @@ import OtherUsers from '../components/OtherUsers'
 import FollowButton from '../components/FollowButton'
 import Post from '../components/Post'
 import { setSelectedUser } from '../redux/messageSlice'
+import LimitReachedUI from '../components/LimitReachedUI'
 
 const Profile = () => {
     const navigate = useNavigate()
     const { username } = useParams()
     const [postType, setPostType] = useState("posts");
     const dispatch = useDispatch()
-    const { profileData, userData, suggestedUsers } = useSelector(state => state.user)
+    const { profileData, userData, suggestedUsers, consumptionData } = useSelector(state => state.user)
     const { postData } = useSelector(state => state.post)
     const handleProfile = async () => {
         try {
@@ -144,52 +145,58 @@ const Profile = () => {
             </div>
 
             <div className='w-full min-h-[100vh] flex justify-center'>
-                <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[30px] bg-white relative gap-[20px] pt-[30px] pb-[30px]'>
-                    <div className='w-[80%] max-w-[600px] h-[80px] bg-white rounded-full flex justify-around items-center gap-[10px]' >
-
-
-
-                        <div className={`${postType == "posts" ? " bg-black text-white shadow-2xl shadow-black " : " "}  w-[28%] h-[90%] flex justify-center items-center text-[19px] font-semibold hover:bg-black rounded-full hover:text-white cursor-pointer hover:shadow-2xl hover:shadow-black`} onClick={() => setPostType("posts")}>Post</div>
-
-                        <div className={`${postType == "saved" ? " bg-black text-white shadow-2xl shadow-black " : " "}  w-[28%] h-[90%] flex justify-center items-center text-[19px] font-semibold hover:bg-black rounded-full hover:text-white cursor-pointer hover:shadow-2xl hover:shadow-black`} onClick={() => setPostType("saved")}>Saved</div>
-
+                {consumptionData?.isLimitReached ? (
+                    <div style={{ height: 'calc(100vh - 100px)', width: '100%' }}>
+                        <LimitReachedUI />
                     </div>
-                    <Nav />
-                    {postType === "posts" ? (
-                        profileData?.posts && profileData?.posts?.length > 0 ? (
-                            profileData?.posts.map((post, index) => (
-                                post && <Post key={index} post={post} />
-                            ))
-                        ) : (
-                            <div className='text-gray-500 text-center py-[20px]'>No posts yet</div>
-                        )
-                    ) : (
-                        userData?.saved && userData?.saved?.length > 0 ? (
-                            userData?.saved.map((post, index) => (
-                                post && <Post key={index} post={post} />
-                            ))
-                        ) : (
-                            <div className='text-gray-500 text-center py-[20px]'>No saved posts</div>
-                        )
-                    )}
-                </div>
-            </div>
+                ) : (
+                    <div className='w-full max-w-[900px] flex flex-col items-center rounded-t-[40px] bg-gradient-to-b from-[#0f1115] to-black shadow-[0_-10px_40px_rgba(0,0,0,0.8)] relative gap-[24px] pt-[30px] pb-[30px]'>
+                        <div className='w-[80%] max-w-[600px] h-[70px] bg-[#161921] border border-gray-800 rounded-full flex justify-around items-center gap-[10px] p-[5px]' >
 
-            <div className='w-full min-h-[100vh] flex justify-center bg-black pt-[50px]'>
-                <div className='w-full max-w-[900px] flex flex-col items-center gap-[20px] pb-[30px]'>
-                    <h1 className='text-white text-[24px] font-semibold w-full px-[20px]'>Suggested Users For You</h1>
-                    <div className='w-full flex flex-col gap-[15px] px-[20px]'>
-                        {suggestedUsers && suggestedUsers.length > 0 ? (
-                            suggestedUsers.map((user, index) => (
-                                <OtherUsers key={index} user={user} />
-                            ))
+                            <div className={`${postType == "posts" ? " bg-blue-600 text-white shadow-[0_4px_15px_rgba(37,99,235,0.4)] " : " text-gray-400 "}  w-[45%] h-[100%] flex justify-center items-center text-[17px] font-semibold transition-all duration-300 rounded-full hover:text-white cursor-pointer`} onClick={() => setPostType("posts")}>Posts</div>
+
+                            <div className={`${postType == "saved" ? " bg-blue-600 text-white shadow-[0_4px_15px_rgba(37,99,235,0.4)] " : " text-gray-400 "}  w-[45%] h-[100%] flex justify-center items-center text-[17px] font-semibold transition-all duration-300 rounded-full hover:text-white cursor-pointer`} onClick={() => setPostType("saved")}>Saved</div>
+
+                        </div>
+                        <Nav />
+                        {postType === "posts" ? (
+                            profileData?.posts && profileData?.posts?.length > 0 ? (
+                                profileData?.posts.map((post, index) => (
+                                    post && <Post key={index} post={post} />
+                                ))
+                            ) : (
+                                <div className='text-gray-500 text-center py-[20px]'>No posts yet</div>
+                            )
                         ) : (
-                            <div className='text-gray-400 text-center py-[20px]'>No suggested users available</div>
+                            userData?.saved && userData?.saved?.length > 0 ? (
+                                userData?.saved.map((post, index) => (
+                                    post && <Post key={index} post={post} />
+                                ))
+                            ) : (
+                                <div className='text-gray-500 text-center py-[20px]'>No saved posts</div>
+                            )
                         )}
                     </div>
-
-                </div>
+                )}
             </div>
+
+            {!consumptionData?.isLimitReached && (
+                <div className='w-full min-h-[100vh] flex justify-center bg-black pt-[50px]'>
+                    <div className='w-full max-w-[900px] flex flex-col items-center gap-[20px] pb-[120px]'>
+                        <h1 className='text-white text-[24px] font-semibold w-full px-[20px]'>Suggested Users For You</h1>
+                        <div className='w-full flex flex-col gap-[15px] px-[20px]'>
+                            {suggestedUsers && suggestedUsers.length > 0 ? (
+                                suggestedUsers.slice(0, 15).map((user, index) => (
+                                    <OtherUsers key={index} user={user} />
+                                ))
+                            ) : (
+                                <div className='text-gray-400 text-center py-[20px]'>No suggested users available</div>
+                            )}
+                        </div>
+
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

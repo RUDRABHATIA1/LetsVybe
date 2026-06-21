@@ -18,7 +18,7 @@ const LeftHome = () => {
     const {userData, suggestedUsers} = useSelector(state=>state.user)
     const [showNotifications, setShowNotifications] = useState(false);
     const dispatch = useDispatch()
-    const {notificationData}=useSelector(state=>state.user)
+    const {notificationData, consumptionData} = useSelector(state=>state.user)
     const navigate = useNavigate() 
 
     const handleLogOut = async()=>{
@@ -60,14 +60,16 @@ const LeftHome = () => {
 
         </div>
 
-        <div className='w-full flex flex-col gap-[20px] p-[20px]'>
-          <h1 className='text-white text-[19px]'>Suggested Users</h1>
-          {
-            suggestedUsers && suggestedUsers.slice(0,3).map((user,index)=>(
-              <OtherUsers key={index} user={user} />
-            ))
-          }
-        </div>
+        {!consumptionData?.isLimitReached && (
+          <div className='w-full flex flex-col gap-[20px] p-[20px]'>
+            <h1 className='text-white text-[19px]'>Suggested Users</h1>
+            {
+              suggestedUsers && suggestedUsers.slice(0,3).map((user,index)=>(
+                <OtherUsers key={index} user={user} />
+              ))
+            }
+          </div>
+        )}
         </>}
 
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useConsumption from '../hooks/useConsumption.jsx';
 import axios from 'axios';
 import { apiConfig } from '../config/apiConfig.js';
@@ -53,10 +54,7 @@ const ConsumptionTracker = () => {
                         }
                         `}
                     </style>
-                    <div style={{
-                        position: 'fixed',
-                        top: '25px',
-                        right: '25px',
+                    <div className="fixed bottom-[110px] right-[20px] lg:bottom-[30px] lg:right-[30px]" style={{
                         background: 'rgba(20, 20, 20, 0.65)',
                         backdropFilter: 'blur(12px)',
                         WebkitBackdropFilter: 'blur(12px)',
@@ -86,69 +84,6 @@ const ConsumptionTracker = () => {
                 </>
             )}
 
-            {/* Limit Reached Overlay */}
-            {isLimitReached && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'rgba(0,0,0,0.95)',
-                    zIndex: 9999,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    padding: '20px',
-                    textAlign: 'center'
-                }}>
-                    <h1 style={{ fontSize: '2rem', marginBottom: '10px', color: '#ff4d4d' }}>Daily Limit Reached</h1>
-                    <p style={{ fontSize: '1.2rem', marginBottom: '30px' }}>You have reached your daily content consumption limit.</p>
-                    
-                    <div style={{ background: '#222', padding: '20px', borderRadius: '10px', maxWidth: '400px' }}>
-                        <h3 style={{ marginBottom: '15px' }}>Need more time?</h3>
-                        <p style={{ marginBottom: '20px', fontSize: '0.9rem', color: '#ccc' }}>
-                            You can take a loan for additional time today. However, your daily limits for the following days will be reduced as a penalty.
-                        </p>
-                        
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            <button 
-                                onClick={() => handleLoan('5min')}
-                                disabled={loadingLoan}
-                                style={{
-                                    padding: '12px',
-                                    background: '#007bff',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: loadingLoan ? 'not-allowed' : 'pointer',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                Take 5 Min Loan (Next 5 days -5 mins)
-                            </button>
-                            
-                            <button 
-                                onClick={() => handleLoan('10min')}
-                                disabled={loadingLoan}
-                                style={{
-                                    padding: '12px',
-                                    background: '#ff9800',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: loadingLoan ? 'not-allowed' : 'pointer',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                Take 10 Min Loan (Next 10 days -10 mins)
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     );
 };
