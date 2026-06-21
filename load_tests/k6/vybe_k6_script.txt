@@ -1,0 +1,215 @@
+import http from 'k6/http'
+import { check, group, sleep } from 'k6'
+import { Rate, Trend } from 'k6/metrics'
+
+const BASE_URL = (__ENV.BASE_URL || 'https://letsvybe.onrender.com').replace(/\/$/, '')
+const USERNAME = __ENV.USERNAME || 'loaduser1'
+const PASSWORD = __ENV.PASSWORD || 'Password123'
+const TARGET_USERNAME = __ENV.TARGET_USERNAME || USERNAME
+const TARGET_USER_ID = __ENV.TARGET_USER_ID || ''
+const POST_ID = __ENV.POST_ID || ''
+const LOOP_ID = __ENV.LOOP_ID || ''
+const STORY_ID = __ENV.STORY_ID || ''
+const RECEIVER_ID = __ENV.RECEIVER_ID || ''
+
+export const authFailures = new Rate('auth_failures')
+export const apiFailures = new Rate('api_failures')
+export const loginDuration = new Trend('login_duration')
+
+export const options = {
+  thresholds: {
+    http_req_failed: ['rate<0.05'],
+    http_req_duration: ['p(95)<1500'],
+    auth_failures: ['rate<0.05'],
+    api_failures: ['rate<0.05'],
+  },
+  scenarios: {
+    health_check: {
+      executor: 'constant-vus',
+      vus: 20,
+      duration: '1m',
+      exec: 'healthCheck',
+    },
+    signin_only: {
+      executor: 'constant-vus',
+      vus: 20,
+      duration: '1m',
+      exec: 'signInOnly',
+    },
+    read_mix: {
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: [
+        { duration: '30s', target: 50 },
+        { duration: '1m', target: 250 },
+        { duration: '30s', target: 0 },
+      ],
+      exec: 'authReads',
+    },
+    write_samplers: {
+      executor: 'constant-vus',
+      vus: 10,
+      duration: '1m',
+      exec: 'writes',
+    },
+  },
+}
+
+function baseHeaders(token) {
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  }
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  return headers
+}
+
+function login() {
+  const payload = JSON.stringify({
+    username: USERNAME,
+    password: PASSWORD,
+    email: USERNAME,
+  })
+
+  const response = http.post(`${BASE_URL}/api/auth/signin`, payload, {
+    headers: baseHeaders(),
+  })
+
+  loginDuration.add(response.timings.duration)
+
+  const success = check(response, {
+    'signin status is 200': (res) => res.status === 200,
+    'signin returned token': (res) => Boolean(res.json('token')),
+  })
+
+  authFailures.add(!success)
+
+  return success ? response.json('token') : null
+}
+
+export function healthCheck() {
+  group('health', () => {
+    const responses = [http.get(`${BASE_URL}/`), http.get(`${BASE_URL}/api/health`)]
+
+    for (const response of responses) {
+      const success = check(response, {
+        'health status is 200': (res) => res.status === 200,
+      })
+      apiFailures.add(!success)
+    }
+  })
+
+  sleep(1)
+}
+
+export function signInOnly() {
+  group('sign in', () => {
+    const token = login()
+    if (!token) {
+      sleep(1)
+      return
+    }
+  })
+
+  sleep(1)
+}
+
+export function authReads() {
+  group('authenticated reads', () => {
+    const token = login()
+    if (!token) {
+      sleep(1)
+      return
+    }
+
+    const headers = baseHeaders(token)
+    const endpoints = [
+      '/api/post/getAll',
+      '/api/loop/getAll',
+      '/api/user/current',
+      '/api/user/suggested',
+      '/api/story/getAll',
+      '/api/user/followingList',
+      '/api/user/getAllNotifications',
+      '/api/message/prevChats',
+    ]
+
+    for (const endpoint of endpoints) {
+      const response = http.get(`${BASE_URL}${endpoint}`, { headers })
+      const success = check(response, {
+        [`${endpoint} status is 200`]: (res) => res.status === 200,
+      })
+      apiFailures.add(!success)
+    }
+
+    if (TARGET_USERNAME) {
+      const response = http.get(`${BASE_URL}/api/user/getProfile/${TARGET_USERNAME}`, {
+        headers,
+      })
+      const success = check(response, {
+        'profile lookup status is 200': (res) => res.status === 200,
+      })
+      apiFailures.add(!success)
+    }
+
+    if (STORY_ID) {
+      const response = http.get(`${BASE_URL}/api/story/view/${STORY_ID}`, { headers })
+      const success = check(response, {
+        'story view status is 200': (res) => res.status === 200,
+      })
+      apiFailures.add(!success)
+    }
+
+    if (RECEIVER_ID) {
+      const response = http.get(`${BASE_URL}/api/message/getAll/${RECEIVER_ID}`, { headers })
+      const success = check(response, {
+        'message history status is 200': (res) => res.status === 200,
+      })
+      apiFailures.add(!success)
+    }
+  })
+
+  sleep(1)
+}
+
+export function writes() {
+  const token = login()
+  if (!token) {
+    sleep(1)
+    return
+  }
+
+  const headers = baseHeaders(token)
+
+  group('write endpoints', () => {
+    if (TARGET_USER_ID) {
+      const followResponse = http.get(`${BASE_URL}/api/user/follow/${TARGET_USER_ID}`, { headers })
+      const followSuccess = check(followResponse, {
+        'follow status is 200': (res) => res.status === 200,
+      })
+      apiFailures.add(!followSuccess)
+    }
+
+    if (POST_ID) {
+      const likeResponse = http.post(`${BASE_URL}/api/post/like/${POST_ID}`, '{}', { headers })
+      const likeSuccess = check(likeResponse, {
+        'post like status is 200': (res) => res.status === 200,
+      })
+      apiFailures.add(!likeSuccess)
+    }
+
+    if (LOOP_ID) {
+      const likeResponse = http.post(`${BASE_URL}/api/loop/like/${LOOP_ID}`, '{}', { headers })
+      const likeSuccess = check(likeResponse, {
+        'loop like status is 200': (res) => res.status === 200,
+      })
+      apiFailures.add(!likeSuccess)
+    }
+  })
+
+  sleep(1)
+}

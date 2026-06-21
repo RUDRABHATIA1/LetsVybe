@@ -1,0 +1,284 @@
+import http from 'k6/http'
+import { check, group, sleep } from 'k6'
+import { Rate, Trend } from 'k6/metrics'
+
+const BASE_URL = (__ENV.BASE_URL || 'https://letsvybe.onrender.com').replace(/\/$/, '')
+const USERNAME = __ENV.USERNAME || 'loaduser1'
+const PASSWORD = __ENV.PASSWORD || 'Password123'
+const EMAIL = __ENV.EMAIL || USERNAME
+const TARGET_USERNAME = __ENV.TARGET_USERNAME || USERNAME
+const TARGET_USER_ID = __ENV.TARGET_USER_ID || ''
+const POST_ID = __ENV.POST_ID || ''
+const LOOP_ID = __ENV.LOOP_ID || ''
+const STORY_ID = __ENV.STORY_ID || ''
+const RECEIVER_ID = __ENV.RECEIVER_ID || ''
+const OTP = __ENV.OTP || ''
+
+const HEALTH_VUS = Number(__ENV.HEALTH_VUS || 200)
+const SIGNIN_VUS = Number(__ENV.SIGNIN_VUS || 1000)
+const READ_VUS = Number(__ENV.READ_VUS || 5000)
+const WRITE_VUS = Number(__ENV.WRITE_VUS || 1000)
+const OTP_VUS = Number(__ENV.OTP_VUS || 500)
+
+export const authFailures = new Rate('auth_failures')
+export const apiFailures = new Rate('api_failures')
+export const loginDuration = new Trend('login_duration')
+
+export const options = {
+  thresholds: {
+    http_req_failed: ['rate<0.05'],
+    http_req_duration: ['p(95)<2000'],
+    auth_failures: ['rate<0.05'],
+    api_failures: ['rate<0.05'],
+  },
+  scenarios: {
+    health_and_root: {
+      executor: 'constant-vus',
+      vus: HEALTH_VUS,
+      duration: '2m',
+      exec: 'healthAndRoot',
+    },
+    signup_smoke: {
+      executor: 'constant-vus',
+      vus: 20,
+      duration: '2m',
+      exec: 'signupSmoke',
+    },
+    signin_100k_scale: {
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: [
+        { duration: '2m', target: Math.min(1000, SIGNIN_VUS / 2) },
+        { duration: '3m', target: SIGNIN_VUS },
+        { duration: '2m', target: 0 },
+      ],
+      exec: 'signinOnly',
+    },
+    auth_reads_100k_scale: {
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: [
+        { duration: '2m', target: Math.min(2500, READ_VUS / 2) },
+        { duration: '4m', target: READ_VUS },
+        { duration: '2m', target: 0 },
+      ],
+      exec: 'authenticatedReads',
+    },
+    write_paths: {
+      executor: 'constant-vus',
+      vus: WRITE_VUS,
+      duration: '2m',
+      exec: 'writePaths',
+    },
+    otp_password_reset: {
+      executor: 'constant-vus',
+      vus: OTP_VUS,
+      duration: '2m',
+      exec: 'otpResetFlow',
+    },
+  },
+}
+
+function headers(token) {
+  const base = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  }
+
+  if (token) {
+    base.Authorization = `Bearer ${token}`
+  }
+
+  return base
+}
+
+function login() {
+  const response = http.post(
+    `${BASE_URL}/api/auth/signin`,
+    JSON.stringify({ username: USERNAME, password: PASSWORD, email: EMAIL }),
+    { headers: headers() },
+  )
+
+  loginDuration.add(response.timings.duration)
+
+  const success = check(response, {
+    'signin returned 200': (res) => res.status === 200,
+    'signin returned token': (res) => Boolean(res.json('token')),
+  })
+
+  authFailures.add(!success)
+  return success ? response.json('token') : null
+}
+
+function hit(endpoint, method = 'GET', token = null, body = null) {
+  const requestOptions = { headers: headers(token) }
+  const response = method === 'POST'
+    ? http.post(`${BASE_URL}${endpoint}`, body ? JSON.stringify(body) : '{}', requestOptions)
+    : method === 'PUT'
+      ? http.put(`${BASE_URL}${endpoint}`, body ? JSON.stringify(body) : '{}', requestOptions)
+      : http.get(`${BASE_URL}${endpoint}`, requestOptions)
+
+  return response
+}
+
+function expect200(name, response) {
+  const success = check(response, {
+    [`${name} status is 200`]: (res) => res.status === 200,
+  })
+
+  apiFailures.add(!success)
+  return success
+}
+
+export function healthAndRoot() {
+  group('root and health', () => {
+    expect200('root', http.get(`${BASE_URL}/`))
+    expect200('health', http.get(`${BASE_URL}/api/health`))
+  })
+
+  sleep(1)
+}
+
+export function signupSmoke() {
+  group('signup', () => {
+    const unique = `${USERNAME}-${__VU}-${__ITER}`
+    const response = http.post(
+      `${BASE_URL}/api/auth/signup`,
+      JSON.stringify({
+        name: `Load ${unique}`,
+        username: unique,
+        email: `${unique}@example.com`,
+        password: PASSWORD,
+      }),
+      { headers: headers() },
+    )
+
+    const success = check(response, {
+      'signup status is 201 or 400': (res) => res.status === 201 || res.status === 400,
+    })
+
+    authFailures.add(!success)
+  })
+
+  sleep(1)
+}
+
+export function signinOnly() {
+  group('signin', () => {
+    login()
+  })
+
+  sleep(1)
+}
+
+export function otpResetFlow() {
+  group('otp password reset flow', () => {
+    const sendOtp = http.post(
+      `${BASE_URL}/api/auth/sendOtp`,
+      JSON.stringify({ email: EMAIL }),
+      { headers: headers() },
+    )
+    expect200('sendOtp', sendOtp)
+
+    if (!OTP) {
+      return
+    }
+
+    const verifyOtp = http.post(
+      `${BASE_URL}/api/auth/verifyOtp`,
+      JSON.stringify({ email: EMAIL, otp: OTP }),
+      { headers: headers() },
+    )
+    expect200('verifyOtp', verifyOtp)
+
+    const resetPassword = http.post(
+      `${BASE_URL}/api/auth/resetPassword`,
+      JSON.stringify({ email: EMAIL, password: PASSWORD }),
+      { headers: headers() },
+    )
+    expect200('resetPassword', resetPassword)
+  })
+
+  sleep(1)
+}
+
+export function authenticatedReads() {
+  group('authenticated reads', () => {
+    const token = login()
+    if (!token) {
+      sleep(1)
+      return
+    }
+
+    const endpoints = [
+      ['/api/post/getAll', 'GET'],
+      ['/api/loop/getAll', 'GET'],
+      ['/api/user/current', 'GET'],
+      ['/api/user/suggested', 'GET'],
+      ['/api/story/getAll', 'GET'],
+      ['/api/user/followingList', 'GET'],
+      ['/api/user/getAllNotifications', 'GET'],
+      ['/api/user/markAsRead', 'GET'],
+      ['/api/message/prevChats', 'GET'],
+    ]
+
+    for (const [endpoint, method] of endpoints) {
+      expect200(endpoint, hit(endpoint, method, token))
+    }
+
+    expect200('/api/user/getProfile', hit(`/api/user/getProfile/${TARGET_USERNAME}`, 'GET', token))
+
+    if (RECEIVER_ID) {
+      expect200('/api/message/getAll', hit(`/api/message/getAll/${RECEIVER_ID}`, 'GET', token))
+    }
+
+    if (STORY_ID) {
+      expect200('/api/story/view', hit(`/api/story/view/${STORY_ID}`, 'GET', token))
+    }
+  })
+
+  sleep(1)
+}
+
+export function writePaths() {
+  const token = login()
+  if (!token) {
+    sleep(1)
+    return
+  }
+
+  group('write endpoints', () => {
+    if (TARGET_USER_ID) {
+      expect200('/api/user/follow', hit(`/api/user/follow/${TARGET_USER_ID}`, 'GET', token))
+    }
+
+    if (POST_ID) {
+      expect200('/api/post/like', hit(`/api/post/like/${POST_ID}`, 'POST', token, {}))
+      expect200('/api/post/comment', hit(`/api/post/comment/${POST_ID}`, 'POST', token, { message: 'k6 load comment' }))
+      expect200('/api/post/saved', hit(`/api/post/saved/${POST_ID}`, 'GET', token))
+    }
+
+    if (LOOP_ID) {
+      expect200('/api/loop/like', hit(`/api/loop/like/${LOOP_ID}`, 'POST', token, {}))
+      expect200('/api/loop/comment', hit(`/api/loop/comment/${LOOP_ID}`, 'POST', token, { message: 'k6 load comment' }))
+    }
+
+    if (STORY_ID) {
+      expect200('/api/story/view', hit(`/api/story/view/${STORY_ID}`, 'GET', token))
+    }
+
+    if (RECEIVER_ID) {
+      expect200('/api/message/send', hit(`/api/message/send/${RECEIVER_ID}`, 'POST', token, { message: 'k6 load message' }))
+    }
+
+    expect200('/api/user/editprofile', hit('/api/user/editprofile', 'PUT', token, {
+      name: 'Vybe Load User',
+      username: TARGET_USERNAME,
+      bio: 'load test',
+      profession: 'tester',
+      gender: 'male',
+    }))
+  })
+
+  sleep(1)
+}

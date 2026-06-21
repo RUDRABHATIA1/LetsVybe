@@ -26,6 +26,7 @@ import Search from './pages/Search.jsx'
 import getAllNotifications from './hooks/getAllNotifications.jsx'
 import Notifications from './pages/Notifications.jsx'
 import { setNotificationData } from './redux/userSlice.js'
+import ConsumptionTracker from './components/ConsumptionTracker.jsx'
 
 const App = () => {
   getCurrentUser()
@@ -77,8 +78,10 @@ const App = () => {
   },[socket, dispatch, notificationData])
 
   return (
-    <Routes>
-      <Route path='/signup' element = {!userData ? <SignUp/> : <Navigate to={'/'}/>}/>
+    <>
+      <ConsumptionTracker />
+      <Routes>
+        <Route path='/signup' element = {!userData ? <SignUp/> : <Navigate to={'/'}/>}/>
       <Route path='/signin' element = {!userData ? <SignIn/> : <Navigate to={'/'}/>}/>
       <Route path='/' element = {userData ? <Home/> : <Navigate to={'/signin'}/>}/>
       <Route path='/forgotpassword' element = {!userData ? <ForgotPassword/> : <Navigate to={'/'}/>}/>
@@ -91,7 +94,8 @@ const App = () => {
       <Route path='/notifications' element = {userData ? <Notifications/> : <Navigate to={'/'}/>}/>
       <Route path='/upload' element = {userData ? <Upload/> : <Navigate to={'/'}/>}/>
       <Route path='/search' element = {userData ? <Search/> : <Navigate to={'/'}/>}/>
-    </Routes>
+      </Routes>
+    </>
   )
 }
 

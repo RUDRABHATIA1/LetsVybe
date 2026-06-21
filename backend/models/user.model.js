@@ -69,8 +69,17 @@ const userSchema = new mongoose.Schema({
     isOtpVerified:{
         type:Boolean,
         default:false
+    },
+    contentTracking: {
+        baseLimit: { type: Number, default: 30 },
+        consumedToday: { type: Number, default: 0 },
+        lastUpdated: { type: Date, default: Date.now },
+        activeLoan: {
+            type: { type: String, enum: ['none', '5min', '10min'], default: 'none' },
+            penaltyDaysRemaining: { type: Number, default: 0 },
+            loanTakenDate: { type: Date }
+        }
     }
-
 
 },{timestamps:true})
 

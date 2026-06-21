@@ -12,6 +12,7 @@ import postRouter from './routes/post.routes.js'
 import loopRouter from './routes/loop.routes.js'
 import storyRouter from './routes/story.routes.js'
 import messageRouter from './routes/message.routs.js'
+import consumptionRouter from './routes/consumption.routes.js'
 import { app, server } from './socket.js'
 
 dotenv.config()
@@ -65,6 +66,7 @@ app.use('/api/post',postRouter)
 app.use('/api/loop',loopRouter)
 app.use('/api/story',storyRouter)
 app.use('/api/message',messageRouter )
+app.use('/api/user/consumption', consumptionRouter)
 
 server.listen(port,()=>{
     connectDB()
