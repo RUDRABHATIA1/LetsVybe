@@ -36,8 +36,8 @@ const LeftHome = () => {
 
 
   return (
-    <div className={`w-[25%] hidden lg:block min-h-[100vh] bg-black border-r-2 border-gray-900 ${showNotifications ? "overflow-hidden" : "overflow-auto"} `}>
-        <div className='w-full h-[100px] flex items-center justify-between p-[20px ]'>
+    <div className='w-[25%] hidden lg:flex h-screen flex-col bg-black border-r-2 border-gray-900 overflow-hidden'>
+        <div className='w-full h-[100px] shrink-0 flex items-center justify-between p-[20px ]'>
           <img src={logo2} alt="" className='w-[80px]' />
           <div className='relative z-[100]' onClick={()=>setShowNotifications(prev=>!prev)}>
             <Heart className='text-white w-[25px] h-[25px]'/>
@@ -46,7 +46,7 @@ const LeftHome = () => {
         </div>
 
         {!showNotifications && <>
-        <div className='flex items-center w-full gap-[10px] justify-between px-[20px] border-b-2 border-b-gray-900 py-[10px]'>
+        <div className='flex items-center w-full gap-[10px] justify-between px-[20px] border-b-2 border-b-gray-900 py-[10px] shrink-0'>
           <div className='flex items-center gap-[10px]'>
             <div className='w-[70px] h-[70px] border-2 border-black rounded-full cursor-pointer overflow-hidden'>
                 <img src={userData.profileImage ||  dp} alt="" className='' />
@@ -62,13 +62,15 @@ const LeftHome = () => {
         </div>
 
         {!consumptionData?.isLimitReached && (
-          <div className='w-full flex flex-col gap-[20px] p-[20px]'>
+          <div className='w-full flex flex-col gap-[20px] p-[20px] flex-1 min-h-0'>
             <h1 className='text-white text-[19px]'>Suggested Users</h1>
-            {
-              suggestedUsers && suggestedUsers.slice(0,3).map((user,index)=>(
-                <OtherUsers key={index} user={user} />
-              ))
-            }
+            <div className='flex flex-col gap-[12px] overflow-y-auto'>
+              {
+                suggestedUsers && suggestedUsers.slice(0,50).map((user,index)=>(
+                  <OtherUsers key={index} user={user} />
+                ))
+              }
+            </div>
           </div>
         )}
         </>}
