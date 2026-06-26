@@ -23,7 +23,7 @@ const Feed = () => {
           <div className='flex items-center gap-[10px]'>
               <div className='relative ' >
                 <Heart className='text-white w-[25px] h-[25px]'/>
-                  {notificationData && notificationData.some((noti)=>noti.isRead==false) && <div className='w-[10px] h-[10px] bg-blue-600 rounded-full absolute top-0 right-[-5px] '></div>}
+                  {notificationData?.some((noti)=>noti.isRead !== true) && <div className='w-[10px] h-[10px] bg-blue-600 rounded-full absolute top-0 right-[-5px] '></div>}
               </div>
             <MessageCircleMore className='text-white w-[25px] h-[25px]' onClick={()=>navigate('/messages')} />
           </div>

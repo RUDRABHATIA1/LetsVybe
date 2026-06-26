@@ -6,8 +6,10 @@ import NotificaitonCard from '../components/NotificaitonCard'
 import axios from 'axios'
 import { apiConfig } from '../config/apiConfig'
 import { axiosInstance } from '../config/apiConfig'
+import { setNotificationData } from '../redux/userSlice'
 
 const Notifications = () => {
+
     const navigate = useNavigate()
     const {notificationData} = useSelector(state=>state.user)
     const ids= notificationData.map((n)=>n._id)
@@ -20,6 +22,7 @@ const Notifications = () => {
             console.log(`There is Error in the Mark As Read Function in the Notification.jsx `,error)
         }
     }
+
     const fetchNotifications = async () => {
         try{
             const result = await axiosInstance.get(`/api/user/getAllNotifications`,{withCredentials:true})
@@ -30,10 +33,12 @@ const Notifications = () => {
         }
     }
     
-
     useEffect(()=>{
-        markAsRead()
-        fetchNotifications()
+        if(ids.length > 0){
+            markAsRead()
+        }else{
+            fetchNotifications()
+        }
     },[])
 
   return (
@@ -42,7 +47,6 @@ const Notifications = () => {
             <MoveLeft onClick={()=>navigate(`/`)} className='text-white left-[20px] top-[20px] w-[25px] h-[25px] cursor-pointer' />
             <h1 className='font-semibold text-[20px] text-white'>Notifications</h1>
         </div>
-
 
         <div className='w-full flex flex-col gap-[20px] h-[100%] overflow-auto'>
             {notificationData?.map((noti,index)=>(

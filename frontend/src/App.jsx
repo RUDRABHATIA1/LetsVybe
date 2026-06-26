@@ -81,19 +81,19 @@ const App = () => {
     <>
       <ConsumptionTracker />
       <Routes>
+        <Route path='/' element = {userData ? <Home/> : <Navigate to={'/signin'}/>}/>
         <Route path='/signup' element = {!userData ? <SignUp/> : <Navigate to={'/'}/>}/>
-      <Route path='/signin' element = {!userData ? <SignIn/> : <Navigate to={'/'}/>}/>
-      <Route path='/' element = {userData ? <Home/> : <Navigate to={'/signin'}/>}/>
-      <Route path='/forgotpassword' element = {!userData ? <ForgotPassword/> : <Navigate to={'/'}/>}/>
-      <Route path='/profile/:username' element = {userData ? <Profile/> : <Navigate to={'/'}/>}/>
-      <Route path='/story/:username' element = {userData ? <Story/> : <Navigate to={'/'}/>}/>
-      <Route path='/editprofile' element = {userData ? <EditProfile/> : <Navigate to={'/'}/>}/>
-      <Route path='/messages' element = {userData ? <Messages/> : <Navigate to={'/'}/>}/>
-      <Route path='/messageArea' element = {userData ? <MessageArea/> : <Navigate to={'/'}/>}/>
-      <Route path='/loops' element = {userData ? <Loops/> : <Navigate to={'/'}/>}/>
-      <Route path='/notifications' element = {userData ? <Notifications/> : <Navigate to={'/'}/>}/>
-      <Route path='/upload' element = {userData ? <Upload/> : <Navigate to={'/'}/>}/>
-      <Route path='/search' element = {userData ? <Search/> : <Navigate to={'/'}/>}/>
+        <Route path='/signin' element = {!userData ? <SignIn/> : <Navigate to={'/'}/>}/>
+        <Route path='/forgotpassword' element = {!userData ? <ForgotPassword/> : <Navigate to={'/'}/>}/>
+        <Route path='/profile/:username' element = {userData ? <Profile/> : <Navigate to={'/'}/>}/>
+        <Route path='/story/:username' element = {userData ? <Story/> : <Navigate to={'/'}/>}/>
+        <Route path='/editprofile' element = {userData ? <EditProfile/> : <Navigate to={'/'}/>}/>
+        <Route path='/messages' element = {userData ? <Messages/> : <Navigate to={'/'}/>}/>
+        <Route path='/messageArea' element = {userData ? <MessageArea/> : <Navigate to={'/'}/>}/>
+        <Route path='/loops' element = {userData ? <Loops/> : <Navigate to={'/'}/>}/>
+        <Route path='/notifications' element = {userData ? <Notifications/> : <Navigate to={'/'}/>}/>
+        <Route path='/upload' element = {userData ? <Upload/> : <Navigate to={'/'}/>}/>
+        <Route path='/search' element = {userData ? <Search/> : <Navigate to={'/'}/>}/>
       </Routes>
     </>
   )

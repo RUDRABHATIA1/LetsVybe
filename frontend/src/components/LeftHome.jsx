@@ -21,6 +21,8 @@ const LeftHome = () => {
     const {notificationData, consumptionData} = useSelector(state=>state.user)
     const navigate = useNavigate() 
 
+
+
     const handleLogOut = async()=>{
       try {
         const result = await axiosInstance.get(`/api/auth/signout`,{withCredentials:true})
@@ -39,7 +41,7 @@ const LeftHome = () => {
           <img src={logo2} alt="" className='w-[80px]' />
           <div className='relative z-[100]' onClick={()=>setShowNotifications(prev=>!prev)}>
             <Heart className='text-white w-[25px] h-[25px]'/>
-            {notificationData && notificationData.some((noti)=>noti.isRead==false) && <div className='w-[10px] h-[10px] bg-blue-600 rounded-full absolute top-0 right-[-5px] '></div>}
+            {notificationData?.some((noti)=>noti.isRead !== true) && <div className='w-[10px] h-[10px] bg-blue-600 rounded-full absolute top-0 right-[-5px] '></div>}
           </div>
         </div>
 
@@ -55,7 +57,6 @@ const LeftHome = () => {
             </div>
           </div>
           <div className='text-blue-500 font-semibold cursor-pointer' onClick={handleLogOut}>LogOut</div>
-
 
 
         </div>

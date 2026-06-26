@@ -231,8 +231,17 @@ export const getAllNotifications=async(req,res)=>{
 export const markAsRead = async(req,res)=>{
     try {
         const {notificationId} = req.body
-        const notification=await Notification.findById(notificationId)
-        .populate("sender receiver post loop ")
+        const ids = Array.isArray(notificationId) ? notificationId : [notificationId].filter(Boolean)
+
+        if(ids.length === 0){
+            return res.status(400).json({message:"notificationId is required"})
+        }
+
+        await Notification.updateMany(
+            {_id: {$in: ids}},
+            {$set: {isRead: true}}
+        )
+
         return res.status(200).json({message:"Marked as read"})
     } catch (error) {
         return res.status(500).json({message:`Read Notification Error ${error}`}) 

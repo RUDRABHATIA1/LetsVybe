@@ -12,7 +12,7 @@ const getCurrentUser = () => {
         if (savedToken) {
             // Token will be automatically added to requests by axios interceptor
         }
-        
+
         const fetchUser = async () => {
             try{
                 const result = await axios.get(`/api/user/current`,{withCredentials:true})
@@ -30,4 +30,3 @@ const getCurrentUser = () => {
 }
 
 export default getCurrentUser
-
